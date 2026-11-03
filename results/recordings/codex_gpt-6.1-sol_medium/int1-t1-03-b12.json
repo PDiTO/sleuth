@@ -1,0 +1,189 @@
+{
+ "provider": "codex/gpt-6.1-sol@medium",
+ "system": "You are the experimenter in a study of scientific reasoning. A black box hides a rule. You can learn about the rule only by choosing inputs and seeing what the box returns.\n\nYou have no tools. You cannot run code, search the web or read files, so do all of your reasoning in your head.\n\nEach turn you either run one experiment or stop experimenting. Experiments are limited, so choose inputs that will tell you the most. When you stop, or when the budget runs out, you will be shown new inputs and asked to predict the box's output for each one. You are scored only on those predictions.\n\nEvery reply must be exactly one JSON object and nothing else: no text before or after it and no code fence. Before each experiment, write down your current best hypothesis and the output it predicts for the input you are about to try.",
+ "calls": [
+  {
+   "key": "fd6979463958b23a4dc7fd75fd8338c00203f009d5bf9280bef810d4aab72eca",
+   "at": "2026-11-03T00:40:55+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 0, so 12 remain.\n\n# What you have seen\n\nNothing yet.\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = x\",\"query\":-17,\"prediction\":-17}",
+    "seconds": 11.46,
+    "meta": {
+     "input_tokens": 6814,
+     "cached_input_tokens": 5504,
+     "output_tokens": 24,
+     "reasoning_output_tokens": 0,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "372e49233531df2470e160e27578df6c56ee0d63ac1b4df8062188e10d3e5246",
+   "at": "2026-11-03T00:42:01+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 1, so 11 remain.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = x mod 10\",\"query\":8,\"prediction\":8}",
+    "seconds": 65.93,
+    "meta": {
+     "input_tokens": 2901,
+     "cached_input_tokens": 0,
+     "output_tokens": 98,
+     "reasoning_output_tokens": 71,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "97ce22df1999c1dcdf017a4af895c19f6b4d77984dd196e536549c26eaec70c2",
+   "at": "2026-11-03T00:42:17+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 2, so 10 remain.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n2. f(8) -> 8 (as you predicted). Your hypothesis then: \"f(x) = x mod 10\"\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = x mod 10\",\"query\":23,\"prediction\":3}",
+    "seconds": 16.74,
+    "meta": {
+     "input_tokens": 6869,
+     "cached_input_tokens": 5504,
+     "output_tokens": 150,
+     "reasoning_output_tokens": 123,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "8dbedbf0b9e19d8184696f6c4a7e3e2da63e5db236d1c6a97fe409a470d7b794",
+   "at": "2026-11-03T00:42:35+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 3, so 9 remain.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n2. f(8) -> 8 (as you predicted). Your hypothesis then: \"f(x) = x mod 10\"\n3. f(23) -> 23 (you predicted 3). Your hypothesis then: \"f(x) = x mod 10\"\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = max(x, 3)\",\"query\":-8,\"prediction\":3}",
+    "seconds": 18.04,
+    "meta": {
+     "input_tokens": 6890,
+     "cached_input_tokens": 5504,
+     "output_tokens": 154,
+     "reasoning_output_tokens": 124,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "b810b92c05d20cc24d575a91602d2af5d9c4bac9cf4757cf45f53c2b5c876a38",
+   "at": "2026-11-03T00:42:46+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 4, so 8 remain.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n2. f(8) -> 8 (as you predicted). Your hypothesis then: \"f(x) = x mod 10\"\n3. f(23) -> 23 (you predicted 3). Your hypothesis then: \"f(x) = x mod 10\"\n4. f(-8) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = max(x, 3)\",\"query\":0,\"prediction\":3}",
+    "seconds": 10.29,
+    "meta": {
+     "input_tokens": 6923,
+     "cached_input_tokens": 3456,
+     "output_tokens": 50,
+     "reasoning_output_tokens": 21,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "15924be3a49a68d0a6228e259e4623030846b94010b029c388444cde795dde6d",
+   "at": "2026-11-03T00:43:04+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 5, so 7 remain.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n2. f(8) -> 8 (as you predicted). Your hypothesis then: \"f(x) = x mod 10\"\n3. f(23) -> 23 (you predicted 3). Your hypothesis then: \"f(x) = x mod 10\"\n4. f(-8) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n5. f(0) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = max(x, 3)\",\"query\":4,\"prediction\":4}",
+    "seconds": 17.97,
+    "meta": {
+     "input_tokens": 6950,
+     "cached_input_tokens": 5504,
+     "output_tokens": 164,
+     "reasoning_output_tokens": 135,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "8ad0578a94cd6800eb227ca92c897e1f9c81d9770beab8f7ad29eb45a346dfbd",
+   "at": "2026-11-03T00:43:22+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 6, so 6 remain.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n2. f(8) -> 8 (as you predicted). Your hypothesis then: \"f(x) = x mod 10\"\n3. f(23) -> 23 (you predicted 3). Your hypothesis then: \"f(x) = x mod 10\"\n4. f(-8) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n5. f(0) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n6. f(4) -> 4 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = max(x, 3)\",\"query\":2,\"prediction\":3}",
+    "seconds": 17.82,
+    "meta": {
+     "input_tokens": 6977,
+     "cached_input_tokens": 5504,
+     "output_tokens": 201,
+     "reasoning_output_tokens": 172,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "b99c3236bac86e469cf4ab31cf0509bf7f1da275a9dfef6a2e9358c4d264664f",
+   "at": "2026-11-03T00:43:39+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 7, so 5 remain.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n2. f(8) -> 8 (as you predicted). Your hypothesis then: \"f(x) = x mod 10\"\n3. f(23) -> 23 (you predicted 3). Your hypothesis then: \"f(x) = x mod 10\"\n4. f(-8) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n5. f(0) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n6. f(4) -> 4 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n7. f(2) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = max(x, 3)\",\"query\":50,\"prediction\":50}",
+    "seconds": 17.54,
+    "meta": {
+     "input_tokens": 7014,
+     "cached_input_tokens": 5504,
+     "output_tokens": 146,
+     "reasoning_output_tokens": 117,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "1ff068c866b0737836fd71ccc761e97c06dc2b9c12efeb686328ad7bc570a97f",
+   "at": "2026-11-03T00:44:02+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# Budget\n\nYou may run up to 12 experiments. You have run 8, so 4 remain.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n2. f(8) -> 8 (as you predicted). Your hypothesis then: \"f(x) = x mod 10\"\n3. f(23) -> 23 (you predicted 3). Your hypothesis then: \"f(x) = x mod 10\"\n4. f(-8) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n5. f(0) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n6. f(4) -> 4 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n7. f(2) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n8. f(50) -> 50 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n\n# Your move\n\nAn input is an integer x with -50 <= x <= 50, for example 7. An output is an integer.\nReply with exactly one JSON object. To run an experiment:\n{\"hypothesis\": \"<your current best guess at the rule>\", \"query\": <input>, \"prediction\": <the output your hypothesis predicts for that input>}\nTo stop experimenting and move on to the test:\n{\"hypothesis\": \"<your final rule>\", \"commit\": true}",
+   "reply": {
+    "text": "{\"hypothesis\":\"f(x) = max(x, 3)\",\"commit\":true}",
+    "seconds": 22.54,
+    "meta": {
+     "input_tokens": 7041,
+     "cached_input_tokens": 5504,
+     "output_tokens": 195,
+     "reasoning_output_tokens": 170,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  },
+  {
+   "key": "65a946e0cdb10099fde1f5603bf7e1432159e462dc8226fc4a49fe0fe8d20559",
+   "at": "2026-11-03T00:44:12+00:00",
+   "prompt": "# The box\n\nThe box computes an integer function f(x) of one integer x, with -50 <= x <= 50. The rule is a small expression built from: x; integer constants 1, 2, 3, 5, 10; + - * ; min(a, b), max(a, b), abs(a); a mod k for k in {2, 3, 5, 7, 10} (the result has the sign of k, so it is in [0, k)); a div k for k in {2, 3} (floor division, rounding towards minus infinity); bitwise a & b, a | b, a ^ b on two's-complement integers, so negative numbers work as they do in Python; and piecewise rules 'if <test> then A else B' where the test is one of: x < 0; x < 5; x < 10; x is even. Rules are small. Counting each variable, constant and operation as one piece, \"mod k\" and \"div k\" as two and an if-test as three, a rule has at most 7 pieces.\n\n# What you have seen\n\n1. f(-17) -> 3 (you predicted -17). Your hypothesis then: \"f(x) = x\"\n2. f(8) -> 8 (as you predicted). Your hypothesis then: \"f(x) = x mod 10\"\n3. f(23) -> 23 (you predicted 3). Your hypothesis then: \"f(x) = x mod 10\"\n4. f(-8) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n5. f(0) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n6. f(4) -> 4 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n7. f(2) -> 3 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n8. f(50) -> 50 (as you predicted). Your hypothesis then: \"f(x) = max(x, 3)\"\n\n# Test\n\nYou have finished experimenting. Your final hypothesis was: \"f(x) = max(x, 3)\"\nPredict the box's output for each of these 10 inputs, in order:\n1. f(-22)\n2. f(-20)\n3. f(-49)\n4. f(-34)\n5. f(28)\n6. f(-1)\n7. f(19)\n8. f(-7)\n9. f(-19)\n10. f(35)\n\nReply with exactly one JSON object: {\"predictions\": [<output 1>, ..., <output 10>]}. Each output is an integer.",
+   "reply": {
+    "text": "{\"predictions\":[3,3,3,3,28,3,19,3,3,35]}",
+    "seconds": 10.19,
+    "meta": {
+     "input_tokens": 7044,
+     "cached_input_tokens": 5504,
+     "output_tokens": 28,
+     "reasoning_output_tokens": 0,
+     "tool_calls": 0,
+     "tool_types": [],
+     "errors": []
+    }
+   }
+  }
+ ],
+ "task": "int1-t1-03",
+ "budget": 12,
+ "complete": true
+}
