@@ -76,6 +76,14 @@ def test_run_replay_and_report(small_tasks: list[tasks.Task], tmp_path: Path) ->
         assert e.predictions == orig.predictions
         assert e.accuracy == orig.accuracy
 
+    # a stale call left by an earlier version of a prompt is pruned away
+    path = next(rec.glob("*/*.json"))
+    data = json.loads(path.read_text())
+    data["calls"].append({**data["calls"][0], "key": "stale", "prompt": "old"})
+    path.write_text(json.dumps(data))
+    assert runner.prune(world, rec) == 1
+    assert runner.prune(world, rec) == 0
+
     tasks_path = tmp_path / "tasks.json"
     tasks.save(small_tasks, tasks_path)
     summary = report.build(
@@ -96,9 +104,9 @@ def test_run_replay_and_report(small_tasks: list[tasks.Task], tmp_path: Path) ->
     act = summary["agents"]["active"]["by_budget"]["3"]
     assert act["efficiency"][0] == pytest.approx(1.0, abs=0.05)
 
-    # the cli wrapper around show
-    path = next(rec.glob("*/*.json"))
+    # the cli wrappers around show and prune
     assert cli.main(["show", str(path), "--tasks", str(tasks_path)]) == 0
+    assert cli.main(["prune", "--tasks", str(tasks_path), "--recordings", str(rec)]) == 0
 
 
 def test_world_rejects_changed_rules(small_tasks: list[tasks.Task]) -> None:

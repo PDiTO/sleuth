@@ -99,6 +99,13 @@ def cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_prune(args: argparse.Namespace) -> int:
+    world = runner.World(tasks.load(args.tasks))
+    dropped = runner.prune(world, args.recordings)
+    print(f"dropped {dropped} unused recorded calls", file=sys.stderr)
+    return 0
+
+
 def cmd_show(args: argparse.Namespace) -> int:
     all_tasks = {t.id: t for t in tasks.load(args.tasks)}
     path = args.path
@@ -152,6 +159,11 @@ def main(argv: list[str] | None = None) -> int:
     rep.add_argument("--docs", type=Path, default=Path("docs"))
     rep.add_argument("--random-seeds", type=int, default=10)
     rep.set_defaults(fn=cmd_report)
+
+    pr = sub.add_parser("prune", help="drop recorded calls that no replay uses")
+    pr.add_argument("--tasks", type=Path, default=DEFAULT_TASKS)
+    pr.add_argument("--recordings", type=Path, default=runner.RECORDINGS)
+    pr.set_defaults(fn=cmd_prune)
 
     s = sub.add_parser("show", help="print one recorded episode")
     s.add_argument("path", type=Path)

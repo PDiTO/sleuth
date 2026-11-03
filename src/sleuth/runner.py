@@ -135,8 +135,29 @@ def replay(world: World, root: Path = RECORDINGS) -> list[Episode]:
     return episodes
 
 
-def replay_one(world: World, path: Path) -> Episode:
+def replay_one(world: World, path: Path, *, prune: bool = False) -> Episode:
+    """Replay one recording. With `prune`, drop recorded calls the replay didn't use,
+    which are left behind when a task's test set or a prompt changes between runs."""
     data = json.loads(path.read_text())
     task = world.by_id[data["task"]]
     rec = Recorder(path, data["provider"], None)
-    return play_recorded(world, task, int(data["budget"]), rec)
+    ep = play_recorded(world, task, int(data["budget"]), rec)
+    if prune:
+        kept = [c for c in rec.data["calls"] if c["key"] in rec.used]
+        if len(kept) != len(rec.data["calls"]):
+            rec.data["calls"] = kept
+            rec.save()
+    return ep
+
+
+def prune(world: World, root: Path = RECORDINGS) -> int:
+    """Drop unused calls from every complete recording; returns how many were dropped."""
+    dropped = 0
+    for path in sorted(root.glob("*/*.json")):
+        data = json.loads(path.read_text())
+        if not data.get("complete") or data["task"] not in world.by_id:
+            continue
+        before = len(data["calls"])
+        replay_one(world, path, prune=True)
+        dropped += before - len(json.loads(path.read_text())["calls"])
+    return dropped

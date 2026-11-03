@@ -376,6 +376,7 @@ class Recorder(Provider):
         self._by_key = {c["key"]: c for c in self.data["calls"]}
         self.hits = 0
         self.misses = 0
+        self.used: set[str] = set()
 
     @property
     def id(self) -> str:
@@ -383,6 +384,7 @@ class Recorder(Provider):
 
     def complete(self, system: str, prompt: str) -> Reply:
         key = call_key(self._id, system, prompt)
+        self.used.add(key)
         hit = self._by_key.get(key)
         if hit is not None:
             self.hits += 1
