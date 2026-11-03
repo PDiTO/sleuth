@@ -144,7 +144,8 @@ def entropy_by_column(m: npt.NDArray[Any]) -> npt.NDArray[np.float64]:
     lengths = np.diff(np.append(flat, n * cols))
     col = flat // n
     p = lengths / n
-    return np.bincount(col, weights=-p * np.log2(p), minlength=cols)
+    counts = np.bincount(col, weights=-p * np.log2(p), minlength=cols)
+    return np.asarray(counts, dtype=np.float64)
 
 
 def partition_entropy(codes: Ids) -> float:
