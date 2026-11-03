@@ -29,6 +29,7 @@ plt.rcParams.update(
         "axes.spines.right": False,
         "axes.grid": True,
         "axes.grid.axis": "y",
+        "axes.axisbelow": True,
         "grid.color": GRID,
         "grid.linewidth": 0.8,
         "xtick.color": INK2,
@@ -116,7 +117,7 @@ def grouped_bars(
     path: Path,
     *,
     ylim: tuple[float, float] | None = (0, 1.02),
-    legend_loc: Any = "upper right",
+    zero_line: bool = False,
 ) -> None:
     col = colours(list(series))
     n = len(series)
@@ -132,7 +133,9 @@ def grouped_bars(
     ax.set_ylabel(ylabel)
     if ylim:
         ax.set_ylim(*ylim)
-    ax.legend(loc=legend_loc, fontsize=8.5, ncol=2)
+    if zero_line:
+        ax.axhline(0, color=INK2, lw=1)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.1), fontsize=8.5, ncol=4 if n == 4 else 3)
     _save(fig, path)
 
 

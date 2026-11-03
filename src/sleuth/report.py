@@ -75,6 +75,15 @@ def _random_efficiency(rows: list[Row]) -> float:
     return sum(vals) / len(vals) if vals else math.nan
 
 
+def _edge(rows: list[Row]) -> float:
+    """How much better than a random probe input from the same state, per query, as a
+    share of the best query's EIG. Zero means no better than picking at random."""
+    vals = [
+        (e - m) / b for r in rows for e, m, b in zip(r.eig, r.rand, r.best, strict=True) if b > 1e-9
+    ]
+    return sum(vals) / len(vals) if vals else math.nan
+
+
 def _zero_info(rows: list[Row]) -> float:
     live = [e for r in rows for e, b in zip(r.eig, r.best, strict=True) if b > 1e-9]
     return sum(e < 1e-9 for e in live) / len(live) if live else math.nan
@@ -119,6 +128,7 @@ def summarise(rows: list[Row], agents: list[str], budgets: list[int]) -> dict[st
                 "surprise_rate": _ci(rb, _share(lambda r: float(r.surprises))),
                 "efficiency": _ci(rb, _efficiency),
                 "random_efficiency": _ci(rb, _random_efficiency) if rb[0].rand else None,
+                "edge_over_random": _ci(rb, _edge) if rb[0].rand else None,
                 "zero_info": _ci(rb, _zero_info),
                 "eig_per_query": _ci(rb, _per_query("eig")),
                 "bits_per_query": _ci(rb, _per_query("bits")),
@@ -264,9 +274,9 @@ def markdown(summary: dict[str, Any], agents: list[str]) -> str:
         lines += ["", f"## Budget {b}", ""]
         lines.append(
             "| agent | solve rate | accuracy | queries | stopped early | invalid / calls | "
-            "info efficiency | zero-info queries | surprise rate |"
+            "info efficiency | random query, same state | zero-info queries | surprise rate |"
         )
-        lines.append("| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+        lines.append("| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
         for a in agents:
             s = summary["agents"][a]["by_budget"].get(str(b))
             if not s:
@@ -276,6 +286,7 @@ def markdown(summary: dict[str, Any], agents: list[str]) -> str:
                 f"| {summary['agents'][a]['label']} | {_fmt(s['solve_rate'])} | "
                 f"{_fmt(s['accuracy'])} | {_fmt(s['queries'], pct=False)} | "
                 f"{s['stopped_early'] * 100:.0f}% | {calls} | {_fmt(s['efficiency'])} | "
+                f"{_fmt(s['random_efficiency'])} | "
                 f"{_fmt(s['zero_info'])} | {_fmt(s['surprise_rate'])} |"
             )
         lines += ["", "Solve rate by tier:", ""]
@@ -365,7 +376,6 @@ def charts(summary: dict[str, Any], agents: list[str], models: list[str], docs: 
         labels,
         "EIG of each query / best available EIG",
         docs / "info-by-family.svg",
-        legend_loc="lower right",
     )
     col = plots.colours(agents)
     rows = []
@@ -377,6 +387,18 @@ def charts(summary: dict[str, Any], agents: list[str], models: list[str], docs: 
         f"information efficiency at budget {top} (1 = always the best query)",
         docs / "info-efficiency.svg",
         xlim=(0, 1.1),
+    )
+    plots.grouped_bars(
+        [f"budget {b}" for b in budgets],
+        {
+            m: [tuple(ab[m]["by_budget"][str(b)]["edge_over_random"]) for b in budgets]
+            for m in models
+        },
+        labels,
+        "EIG above a random query from the same state\n(share of the best query's EIG)",
+        docs / "info-edge.svg",
+        ylim=None,
+        zero_line=True,
     )
     rows = []
     for a in have:
