@@ -8,9 +8,10 @@ budget ("impossible"). Every rejection is counted, so the calibration is visible
 
 The test set is chosen to separate the rule from its near misses. Near misses are the
 hypotheses that agree with the rule on a handful of easy inputs, plus the ones that agree
-with it most often overall, ranked by how often they agree with it. Each greedy pick separates the closest near miss still standing,
-choosing among the inputs that do so the one that separates the most others, and the set
-is topped up at random. A model that settles on a plausible but wrong rule fails some of them.
+with it most often overall, ranked by how often they agree with it. Each greedy pick
+separates the closest near miss still standing, choosing among the inputs that do so the
+one that separates the most others, and the set is topped up at random. A model that
+settles on a plausible but wrong rule fails some of them.
 """
 
 from __future__ import annotations
