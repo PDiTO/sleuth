@@ -7,9 +7,10 @@ agent pins them down with a single query ("trivial"), or when it can't within th
 budget ("impossible"). Every rejection is counted, so the calibration is visible.
 
 The test set is chosen to separate the rule from its near misses. Near misses are the
-hypotheses that agree with the rule on a handful of easy inputs; test inputs are picked
-greedily to tell as many of them apart from the rule as possible, then topped up at
-random. A model that settles on a plausible but wrong rule fails some of them.
+hypotheses that agree with the rule on a handful of easy inputs, plus the ones that agree
+with it most often overall, ranked by how often they agree with it. Each greedy pick separates the closest near miss still standing,
+choosing among the inputs that do so the one that separates the most others, and the set
+is topped up at random. A model that settles on a plausible but wrong rule fails some of them.
 """
 
 from __future__ import annotations
@@ -28,7 +29,7 @@ from .families import Input, Output
 from .space import Space
 
 TEST_SIZE = 10
-GREEDY = 6
+GREEDY = 7
 NEAR_MISSES = 400
 CALIBRATION_BUDGET = 12
 
@@ -107,12 +108,18 @@ def test_set(
     easy_cols = [space.probe_index[q] for q in fam.easy] + [
         space.probe_index[q] for q, _ in given if q in space.probe_index
     ]
+    closeness = (space.sig == truth).mean(axis=1)
     agree_easy = np.all(space.sig[:, easy_cols] == truth[easy_cols], axis=1)
-    agree_easy[h] = False
-    near = np.flatnonzero(agree_easy)
-    if len(near):
-        closeness = (space.sig[near] == truth).mean(axis=1)
-        near = near[np.argsort(-closeness, kind="stable")][:NEAR_MISSES]
+    closeness[h] = -1.0
+    # Hypotheses that agree with the rule on the easy inputs come first, then the ones
+    # that agree with it most often anywhere: both are the wrong answers a model that
+    # stopped early would plausibly hold.
+    easy_first = np.argsort(-closeness - agree_easy.astype(float), kind="stable")
+    near = np.concatenate(
+        [easy_first[: NEAR_MISSES // 2], np.argsort(-closeness, kind="stable")[: NEAR_MISSES // 2]]
+    )
+    near = np.array(list(dict.fromkeys(int(i) for i in near if i != h)), dtype=np.int64)
+    near = near[np.argsort(-closeness[near], kind="stable")]
     excluded = set(easy_cols)
     chosen: list[int] = []
     differs = space.sig[near] != truth if len(near) else np.zeros((0, len(truth)), bool)
@@ -120,11 +127,16 @@ def test_set(
     for _ in range(GREEDY):
         if not alive.any():
             break
+        # Separate the closest near miss still standing, and among the inputs that do,
+        # take one that separates the most of the others too.
+        target = int(np.flatnonzero(alive)[0])
         gain = differs[alive].sum(axis=0).astype(float)
+        gain[~differs[target]] = -1
         gain[list(excluded)] = -1
         top = float(gain.max())
         if top <= 0:
-            break
+            alive[target] = False
+            continue
         ties = [int(c) for c in np.flatnonzero(gain == top)]
         col = rng.choice(ties)
         chosen.append(col)
